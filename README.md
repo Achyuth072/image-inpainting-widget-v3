@@ -1,6 +1,6 @@
 # Image Inpainting Widget v3
 
-Learniong to build a web application that allows users to upload an image, draw a mask on it, and export the original image and the mask image as a pair.
+Learning to build a web application that allows users to upload an image, draw a mask on it, and export the original image and the mask image as a pair.
 
 ## Tech Stack
 
