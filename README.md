@@ -89,4 +89,4 @@ backend/
 2. Set up frontend ~~and backend~~ following the setup instructions
 3. Configure storage settings (AWS S3 credentials or local storage path)
 4. Start development servers
-5. Access the application at http://localhost:5173
+5. Access the application at <http://localhost:5173>
