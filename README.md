@@ -38,10 +38,10 @@ uvicorn main:app --reload -->
 ## Features
 
 - Image upload
-- Interactive drawing canvas [WIP]
-<!-- - Adjustable brush controls
-- Mask generation
-- Image pair export
+- Interactive drawing canvas
+- Adjustable brush controls
+- Mask generation [Wip]
+<!-- - Image pair export
 - Image storage -->
 
 ## Project Structure
