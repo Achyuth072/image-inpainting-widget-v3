@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import DrawingCanvas from './DrawingCanvas'
 import './ImageUploader.css'
 
 function ImageUploader() {
@@ -39,12 +40,7 @@ function ImageUploader() {
                 <span className="file-name" >{fileName}</span>
             </div>    
             {/* 5. Image preview */}
-            {imagePreview && (
-                <div className="preview-container">
-                    <h3>Preview:</h3>
-                    <img src={imagePreview} alt="Preview" style={{maxWidth : '300px'}}/>
-                </div>
-            )}                                        
+            {imagePreview && <DrawingCanvas selectedImage={imagePreview} />}                                       
         </div>
     )
 }
