@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { fabric } from 'fabric'
 import BrushControls from "./BrushControls"
 import './DrawingCanvas.css'
@@ -12,6 +12,29 @@ function DrawingCanvas({selectedImage}) {
     // Refs to store canvas elements
     const canvasRef = useRef(null)
     const fabricCanvasRef = useRef(null)
+    const [maskImage, setMaskImage] = useState(null) // State to store mask image
+
+
+    const handleSaveMask = () => {
+        if(fabricCanvasRef.current) {
+            // Store the background image temporarily
+            const bgImage = fabricCanvasRef.current.backgroundImage
+            fabricCanvasRef.current.backgroundImage = null
+
+            // Export canvas as data URL
+            const maskDataURL = fabricCanvasRef.current.toDataURL({
+                format: 'png',
+                backgroundColor: 'black'
+            })
+
+            // Restore the background image
+            fabricCanvasRef.current.backgroundImage = bgImage
+            fabricCanvasRef.current.renderAll()
+
+            setMaskImage(maskDataURL)
+        }
+
+    }
 
     /**
      * Updates brush properties when controls change
@@ -72,6 +95,13 @@ function DrawingCanvas({selectedImage}) {
         <div className="drawing-canvas-container">
             <BrushControls onBrushChange={handleBrushChange} />
             <canvas ref={canvasRef} />
+            <button onClick={handleSaveMask}>Generate Mask</button>
+            {maskImage && (
+                <div className="preview-container">
+                    <h3>Mask Preview:</h3>
+                    <img src={maskImage} alt="Mask" style={{maxWidth: '300px'}} />
+                </div>
+            )}
         </div>
     )
 
