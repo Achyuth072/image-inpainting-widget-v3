@@ -40,7 +40,7 @@ uvicorn main:app --reload -->
 - Image upload
 - Interactive drawing canvas
 - Adjustable brush controls
-- Mask generation [Wip]
+- Mask generation
 <!-- - Image pair export
 - Image storage -->
 
