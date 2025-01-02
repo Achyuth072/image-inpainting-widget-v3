@@ -16,24 +16,43 @@ function DrawingCanvas({selectedImage}) {
 
 
     const handleSaveMask = () => {
-        if(fabricCanvasRef.current) {
-            // Store the background image temporarily
-            const bgImage = fabricCanvasRef.current.backgroundImage
+        if (fabricCanvasRef.current) {
+            // Store current canvas properties
+            const originalBackground = fabricCanvasRef.current.backgroundImage
+            const originalObjects = [...fabricCanvasRef.current.getObjects()]
+            
+            // Remove all objects temporarily
+            fabricCanvasRef.current.clear()
             fabricCanvasRef.current.backgroundImage = null
 
-            // Export canvas as data URL
-            const maskDataURL = fabricCanvasRef.current.toDataURL({
-                format: 'png',
-                backgroundColor: 'black'
+            // Create mask with white drawings on black background
+            fabricCanvasRef.current.setBackgroundColor('black', () => {
+                // Add back only the drawn paths in white
+                originalObjects.forEach(obj => {
+                    if (obj.type === 'path') {
+                        obj.set({ stroke: 'white' })
+                        fabricCanvasRef.current.add(obj)
+                    }
+                })
+
+                // Export the mask
+                const maskDataUrl = fabricCanvasRef.current.toDataURL({
+                    format: 'png',
+                    backgroundColor: 'black'
+                })
+
+                // Restore original canvas state
+                fabricCanvasRef.current.clear()
+                fabricCanvasRef.current.backgroundImage = originalBackground
+                originalObjects.forEach(obj => {
+                    fabricCanvasRef.current.add(obj)
+                })
+                fabricCanvasRef.current.renderAll()
+
+                // Update mask preview
+                setMaskImage(maskDataUrl)
             })
-
-            // Restore the background image
-            fabricCanvasRef.current.backgroundImage = bgImage
-            fabricCanvasRef.current.renderAll()
-
-            setMaskImage(maskDataURL)
         }
-
     }
 
     /**
@@ -48,19 +67,20 @@ function DrawingCanvas({selectedImage}) {
     }
 
     useEffect(() => {
-        // Initialize the canvas
         fabricCanvasRef.current = new fabric.Canvas(canvasRef.current, {
             isDrawingMode: true,
             width: 800,
-            height: 600,
+            height: 600
         })
 
-        // Set deafault brush options
+        // Set black background
+        fabricCanvasRef.current.setBackgroundColor('black', fabricCanvasRef.current.renderAll.bind(fabricCanvasRef.current))
+        
+        // Set white brush
+        fabricCanvasRef.current.freeDrawingBrush.color = 'white'
         fabricCanvasRef.current.freeDrawingBrush.width = 10
-        fabricCanvasRef.current.freeDrawingBrush.color = '#ffffff'
-        fabricCanvasRef.current.backgroundColor = 'black'
 
-        return() => {
+        return () => {
             fabricCanvasRef.current.dispose()
         }
     }, [])
