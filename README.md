@@ -23,9 +23,17 @@ Learning to build a web application that allows users to upload an image, draw a
 
 ### Frontend Setup
 
+```bash
 cd frontend
+```
+
+```bash
 npm install
+```
+
+```bash
 npm run dev
+```
 
 <!-- ### Backend Setup
 
