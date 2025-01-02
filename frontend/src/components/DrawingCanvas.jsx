@@ -1,31 +1,29 @@
 import { useEffect, useRef, useState } from "react"
 import { fabric } from 'fabric'
 import BrushControls from "./BrushControls"
+import ImageDisplay from "./ImageDisplay"
 import './DrawingCanvas.css'
 
-/**
- * DrawingCanvas Component
- * Provides a canvas for drawing on uploaded images using Fabric.js
- * @param {string} selectedImage - Base64 encoded image data
- */
 function DrawingCanvas({selectedImage}) {
-    // Refs to store canvas elements
     const canvasRef = useRef(null)
     const fabricCanvasRef = useRef(null)
-    const [maskImage, setMaskImage] = useState(null) // State to store mask image
-
+    const [maskImage, setMaskImage] = useState(null)
 
     const handleSaveMask = () => {
         if (fabricCanvasRef.current) {
-            // Store current canvas properties
+            // Create a temporary canvas for mask generation
+            const tempCanvas = document.createElement('canvas')
+            const ctx = tempCanvas.getContext('2d')
+            tempCanvas.width = fabricCanvasRef.current.width
+            tempCanvas.height = fabricCanvasRef.current.height
+
+            // Store current canvas state
             const originalBackground = fabricCanvasRef.current.backgroundImage
             const originalObjects = [...fabricCanvasRef.current.getObjects()]
             
-            // Remove all objects temporarily
+            // Clear canvas and set black background
             fabricCanvasRef.current.clear()
             fabricCanvasRef.current.backgroundImage = null
-
-            // Create mask with white drawings on black background
             fabricCanvasRef.current.setBackgroundColor('black', () => {
                 // Add back only the drawn paths in white
                 originalObjects.forEach(obj => {
@@ -49,16 +47,12 @@ function DrawingCanvas({selectedImage}) {
                 })
                 fabricCanvasRef.current.renderAll()
 
-                // Update mask preview
+                // Set mask image
                 setMaskImage(maskDataUrl)
             })
         }
     }
 
-    /**
-     * Updates brush properties when controls change
-     * @param {Object} param0 - Object containing brush size and color
-    */
     const handleBrushChange = ({size, color}) => {
         if (fabricCanvasRef.current) {
             fabricCanvasRef.current.freeDrawingBrush.width = size
@@ -115,16 +109,17 @@ function DrawingCanvas({selectedImage}) {
         <div className="drawing-canvas-container">
             <BrushControls onBrushChange={handleBrushChange} />
             <canvas ref={canvasRef} />
-            <button onClick={handleSaveMask}>Generate Mask</button>
-            {maskImage && (
-                <div className="preview-container">
-                    <h3>Mask Preview:</h3>
-                    <img src={maskImage} alt="Mask" style={{maxWidth: '300px'}} />
-                </div>
+            <button className="save-button" onClick={handleSaveMask}>
+                Save Mask
+            </button>
+            {selectedImage && maskImage && (
+                <ImageDisplay 
+                    originalImage={selectedImage} 
+                    maskImage={maskImage} 
+                />
             )}
         </div>
     )
-
 }
 
 export default DrawingCanvas
